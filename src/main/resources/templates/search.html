@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Search</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <h2>User Search</h2>
+    <form th:action="@{/search}" method="post">
+        <div>
+            <label for="number">Number:</label>
+            <input type="text" id="number" name="number" required>
+        </div>
+        <button type="submit">Search</button>
+    </form>
+
+    <div th:if="${user != null}">
+        <h3>User Info</h3>
+        <p>Mail: <span th:text="${user.mail}"></span></p>
+        <p>Number: <span th:text="${user.number}"></span></p>
+        <p>First Name: <span th:text="${user.firstName}"></span></p>
+        <p>Last Name: <span th:text="${user.lastName}"></span></p>
+        <p>Role: <span th:text="${user.role}"></span></p>
+    </div>
+    <div th:unless="${user != null}">
+        <p>No user found for the provided number.</p>
+    </div>
+    <script src="/bootstrap.min.js"></script>
+</body>
+</html>
+

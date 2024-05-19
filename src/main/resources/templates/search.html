@@ -1,33 +1,66 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Search</title>
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Search</title>
+<link
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+	rel="stylesheet">
 </head>
 <body>
-    <h2>User Search</h2>
-    <form th:action="@{/search}" method="post">
-        <div>
-            <label for="number">Number:</label>
-            <input type="text" id="number" name="number" required>
-        </div>
-        <button type="submit">Search</button>
-    </form>
+	<div th:replace="navbar.html"></div>
 
-    <div th:if="${user != null}">
-        <h3>User Info</h3>
-        <p>Mail: <span th:text="${user.mail}"></span></p>
-        <p>Number: <span th:text="${user.number}"></span></p>
-        <p>First Name: <span th:text="${user.firstName}"></span></p>
-        <p>Last Name: <span th:text="${user.lastName}"></span></p>
-        <p>Role: <span th:text="${user.role}"></span></p>
-    </div>
-    <div th:unless="${user != null}">
-        <p>No user found for the provided number.</p>
-    </div>
-    <script src="/bootstrap.min.js"></script>
+	<div class="container mt-5">
+		<h2>User Search</h2>
+		<form th:action="@{/search}" method="post">
+			<div class="form-group">
+				<label for="number">Number:</label> <input type="text"
+					class="form-control" id="number" name="number" required>
+			</div>
+			<button type="submit" class="btn btn-primary">Search</button>
+		</form>
+
+		<div th:if="${user != null}" class="mt-4">
+			<div class="container justify-content-center align-items-center"
+				style="height: 100vh;">
+				<div class="col-lg-6">
+					<div class="card bg-success text-white">
+						<div class="card-body">
+							<h3 class="card-title">User Info</h3>
+							<p class="card-text">
+								Mail: <span th:text="${user.mail}" class="font-weight-bold"></span>
+							</p>
+							<p class="card-text">
+								Number: <span th:text="${user.number}" class="font-weight-bold"></span>
+							</p>
+							<p class="card-text">
+								First Name: <span th:text="${user.firstName}"
+									class="font-weight-bold"></span>
+							</p>
+							<p class="card-text">
+								Last Name: <span th:text="${user.lastName}"
+									class="font-weight-bold"></span>
+							</p>
+							<p class="card-text">
+								Role: <span th:text="${user.role}" class="font-weight-bold"></span>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<div th:unless="${user != null}" class="mt-4">
+			<p class="font-weight-bold text-danger">No user found for the
+				provided number.</p>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-

@@ -11,4 +11,5 @@ import com.obs.entities.UserEntity;
 @Repository
 public interface UserRepository extends MongoRepository<UserEntity,String> {
 	Optional<UserEntity> findByNumber(Long number);
+	Optional<UserEntity> findByMail(String mail);
 }

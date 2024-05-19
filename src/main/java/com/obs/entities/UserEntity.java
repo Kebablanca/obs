@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Builder;
 
 
-@Builder
 @Document("users")
 public class UserEntity {
 	
@@ -16,8 +15,16 @@ public class UserEntity {
 	private Long number; 
 	private String firstName;
 	private String lastName;
-	private String role;
+    public enum UserRole {
+        ROLE_STUDENT,
+        ROLE_TEACHER,
+        ROLE_STAFF
+    }
+	private UserRole role;
 	private String password;
+	private String department;
+	
+	
 	public String getMail() {
 		return mail;
 	}
@@ -42,17 +49,25 @@ public class UserEntity {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	public String getRole() {
-		return role;
-	}
-	public void setRole(String role) {
-		this.role = role;
-	}
+
 	public String getPassword() {
 		return password;
 	}
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	public UserRole getRole() {
+		return role;
+	}
+	public void setRole(UserRole role) {
+		this.role = role;
+	}
+	public String getDepartment() {
+		return department;
+	}
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+	
 
 }

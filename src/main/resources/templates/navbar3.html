@@ -1,0 +1,39 @@
+<div class="d-flex">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light flex-column"
+		style="height: 100vh; width: 175px; border-style: solid; background: url('./Image/sidebar.jpg')">
+		<a class="navbar-brand" href="#"> <img src="./Image/profile.png"
+			width="65" height="60"></a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+			data-bs-target="#navbarNav" aria-controls="navbarNav"
+			aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav"
+			style="align-items: baseline;">
+			<ul class="navbar-nav flex-column ">
+				<li class="nav-item mb-5"><a class="nav-link active"
+					aria-current="page" href="#" th:text="${userName} + ' ' + ${lastName}"
+					style="color: #bababa; font-size: 25px; "></a></li>
+				<li class="nav-item"><a class="nav-link active"
+					aria-current="page" href="#" style="color: #bababa">Kontrol
+						Paneli</a></li>
+				<li class="nav-item">
+					<div class="dropdown-divider"></div> <a class="nav-link" href="#"
+					style="color: #bababa">Hakkımızda</a>
+				</li>
+				<li class="nav-item">
+					<div class="dropdown-divider"></div> <a class="nav-link" href="#"
+					style="color: #bababa">Servisler</a>
+				</li>
+				<li class="nav-item">
+					<div class="dropdown-divider"></div> <a class="nav-link" href="#"
+					style="color: #bababa">İletişim</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="flex-grow-1">
+
+	</div>
+</div>

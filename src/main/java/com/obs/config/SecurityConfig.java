@@ -52,6 +52,9 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests((authz) -> authz
             		.requestMatchers("/search").hasRole("STAFF")
+            		.requestMatchers("/users/").hasRole("STAFF")
+            		.requestMatchers("/users/add").hasRole("STAFF")
+            		.requestMatchers("/courses/add").hasRole("STAFF")
                     .anyRequest().authenticated() 
                 )
             .formLogin()

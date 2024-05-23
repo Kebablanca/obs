@@ -8,8 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class EnrollmentService {
+
     private final EnrollmentRepository enrollmentRepository;
     private final CourseRepository courseRepository;
 
@@ -25,10 +29,15 @@ public class EnrollmentService {
 
     public List<CourseEntity> findCoursesByUserNumber(Long userNumber) {
         List<EnrollmentEntity> enrollments = findEnrollmentsByUserNumber(userNumber);
-        List<CourseEntity> courses = enrollments.stream()
-                .map(enrollment -> courseRepository.findById(enrollment.getCourseId()).orElse(null))
-                .filter(course -> course != null)
-                .toList();
-        return courses;
+        return enrollments.stream()
+                .flatMap(enrollment -> enrollment.getCourseIds().stream())
+                .map(courseRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    public void saveEnrollments(EnrollmentEntity enrollment) {
+        enrollmentRepository.save(enrollment);
     }
 }

@@ -33,8 +33,7 @@ public class UserController {
     public UserController(UserService userService, PasswordEncoder passwordEncoder , UserRepository userRepository) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;
-        
+        this.userRepository = userRepository;       
     }
     
     
@@ -76,6 +75,13 @@ public class UserController {
     
     @GetMapping("/search")
     public String showSearchForm(Model model) {
+    	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        UserEntity user = userService.findByMail(userEmail);
+        if (user != null) {
+            model.addAttribute("userName", user.getFirstName());
+            model.addAttribute("lastName", user.getLastName());
+        }
         model.addAttribute("user", new UserEntity());
         return "search"; 
     }
@@ -87,30 +93,5 @@ public class UserController {
         model.addAttribute("user", user);
         return "search"; 
     }
-    
-    @GetMapping("/listUsers")
-    public String listUsers(Model model) {
-        List<UserEntity> users = userService.findAllUsers();
-        model.addAttribute("users", users);
-        return "userList";
-    }    
-
-    @GetMapping("/add")
-    public String showAddUserForm(Model model) {
-        model.addAttribute("user", new UserEntity());
-        return "addUser";
-    }
-
-    @PostMapping("/add")
-    public String addUser(@ModelAttribute UserEntity user, Model model) {
-        userService.createUser(user.getMail(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getRole(), user.getDepartment());
-        return "redirect:/users/";
-    }
-    
-    @PostMapping("/delete/{id}")
-    public String deleteUser(@PathVariable String id) {
-        userService.deleteUser(id);
-        return "redirect:/users/";
-    }    
-    
+       
 }

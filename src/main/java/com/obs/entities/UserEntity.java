@@ -1,6 +1,7 @@
 package com.obs.entities;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Builder;
@@ -12,6 +13,8 @@ public class UserEntity {
 	@Id
 	private String id;
 	private String mail;
+	
+	@Indexed(unique = true)
 	private Long number; 
 	private String firstName;
 	private String lastName;

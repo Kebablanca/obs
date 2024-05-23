@@ -7,54 +7,76 @@
 <link
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
 	rel="stylesheet">
+
+<style type="text/css">
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	background: url('./Image/body.jpg');
+	font-size: 12px;
+	line-height: 22px;
+	min-height: 100%;
+	position: relative;
+}
+
+.container-fluid {
+	display: flex;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+</style>
 </head>
 <body>
 	<div th:replace="navbar.html"></div>
+	<div class="container-fluid">
+		<div th:replace="navbar3.html"></div>
+		<div style="width: 100%;">
+			<div class="container" th:replace="navbar2.html"></div>
+			<div class="container mt-5" style="box-shadow: 1px 1px 1px 1px #999;">
+				<h2>User Search</h2>
+				<form th:action="@{/search}" method="post">
+					<div class="form-group">
+						<label for="number">Number:</label> <input type="text"
+							class="form-control" id="number" name="number" required>
+					</div>
+					<button type="submit" class="btn btn-primary">Search</button>
+				</form>
 
-	<div class="container mt-5">
-		<h2>User Search</h2>
-		<form th:action="@{/search}" method="post">
-			<div class="form-group">
-				<label for="number">Number:</label> <input type="text"
-					class="form-control" id="number" name="number" required>
-			</div>
-			<button type="submit" class="btn btn-primary">Search</button>
-		</form>
-
-		<div th:if="${user != null}" class="mt-4">
-			<div class="container justify-content-center align-items-center"
-				style="height: 100vh;">
-				<div class="col-lg-6">
-					<div class="card bg-success text-white">
-						<div class="card-body">
-							<h3 class="card-title">User Info</h3>
-							<p class="card-text">
-								Mail: <span th:text="${user.mail}" class="font-weight-bold"></span>
-							</p>
-							<p class="card-text">
-								Number: <span th:text="${user.number}" class="font-weight-bold"></span>
-							</p>
-							<p class="card-text">
-								First Name: <span th:text="${user.firstName}"
-									class="font-weight-bold"></span>
-							</p>
-							<p class="card-text">
-								Last Name: <span th:text="${user.lastName}"
-									class="font-weight-bold"></span>
-							</p>
-							<p class="card-text">
-								Role: <span th:text="${user.role}" class="font-weight-bold"></span>
-							</p>
+				<div th:if="${user != null}" class="mt-4">
+					<div class="container justify-content-center align-items-center"
+						style="height: 100vh;">
+						<div class="col-lg-6">
+							<div class="card bg-success text-white">
+								<div class="card-body">
+									<h3 class="card-title">User Info</h3>
+									<p class="card-text">
+										Mail: <span th:text="${user.mail}" class="font-weight-bold"></span>
+									</p>
+									<p class="card-text">
+										Number: <span th:text="${user.number}"
+											class="font-weight-bold"></span>
+									</p>
+									<p class="card-text">
+										First Name: <span th:text="${user.firstName}"
+											class="font-weight-bold"></span>
+									</p>
+									<p class="card-text">
+										Last Name: <span th:text="${user.lastName}"
+											class="font-weight-bold"></span>
+									</p>
+									<p class="card-text">
+										Role: <span th:text="${user.role}" class="font-weight-bold"></span>
+									</p>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
+				<div th:unless="${user != null}" class="mt-4">
+					<p class="font-weight-bold text-danger">No user found for the
+						provided number.</p>
+				</div>
+
 			</div>
-
-		</div>
-
-		<div th:unless="${user != null}" class="mt-4">
-			<p class="font-weight-bold text-danger">No user found for the
-				provided number.</p>
 		</div>
 	</div>
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

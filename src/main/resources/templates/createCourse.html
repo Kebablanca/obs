@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBS</title>
+<link
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+	rel="stylesheet">
+<style type="text/css">
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	background: url('./Image/body.jpg');
+	font-size: 12px;
+	line-height: 22px;
+	min-height: 100%;
+	position: relative;
+}
+
+.container-fluid {
+	display: flex;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+</style>
+</head>
+<body>
+	<div th:replace="navbar.html"></div>
+	<div class="container-fluid">
+		<div th:replace="navbar3.html"></div>
+		<div style="width: 100%;">
+			<div class="container" th:replace="navbar2.html"></div>
+			<div class="container mt-5"
+				style="width: 60%; box-shadow: 3px 3px 3px 3px #999;">
+				<h1>Yeni Ders Oluştur ve Hoca Ata</h1>
+				<form th:action="@{/courses/add}" th:object="${course}"
+					method="post">
+					<div class="form-group">
+						<label for="courseName">Ders Adı</label> <input type="text"
+							id="courseName" name="courseName" class="form-control"
+							th:field="*{courseName}" required>
+					</div>
+					<div class="form-group">
+						<label for="courseCode">Ders Kodu</label> <input type="text"
+							id="courseCode" name="courseCode" class="form-control"
+							th:field="*{courseCode}" required>
+					</div>
+					<div class="form-group">
+						<label for="credits">Kredi</label> <input type="number"
+							id="credits" name="credits" class="form-control"
+							th:field="*{credits}" required>
+					</div>
+					<div class="form-group">
+						<label for="instructor">Hoca</label> <select id="instructor"
+							name="instructor" class="form-control" th:field="*{instructor}"
+							required>
+							<option th:each="teacher : ${teachers}"
+								th:value="${teacher.mail}"
+								th:text="${teacher.firstName} + ' ' + ${teacher.lastName}"></option>
+						</select>
+					</div>
+					<button type="submit" class="btn btn-primary">Kaydet</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

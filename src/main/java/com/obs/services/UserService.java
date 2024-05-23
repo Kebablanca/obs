@@ -38,18 +38,30 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public void createUser(String mail, String password, String firstName, String lastName, UserEntity.UserRole role, String department) {
+    public void createUser(String mail, String password, String firstName, String lastName, Long number, UserEntity.UserRole role, String department) {
+    	
+        if (userRepository.findByNumber(number).isPresent()) {
+            throw new IllegalArgumentException("Number must be unique");
+        }
+    	
+    	
         UserEntity user = new UserEntity();
         user.setMail(mail);
         user.setPassword(passwordEncoder.encode(password));
         user.setFirstName(firstName);
         user.setLastName(lastName);
+        user.setNumber(number);
         user.setRole(role);
         user.setDepartment(department);
         userRepository.save(user);
     }
 
-    public void deleteUser(String id) {
-        userRepository.deleteById(id);
+    public void deleteUserByNumber(Long number) {
+        Optional<UserEntity> user = userRepository.findByNumber(number);
+        user.ifPresent(userRepository::delete);
+    }
+    
+    public List<UserEntity> findUsersByRole(UserEntity.UserRole role) {
+        return userRepository.findByRole(role);
     }
 }

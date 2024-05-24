@@ -62,7 +62,6 @@
                                 </div>`;
                             $('#courseList').append(card);
 
-                            // Önceden seçilmiş dersleri form'a ekle
                             if (isSelected) {
                                 $('<input>').attr({
                                     type: 'hidden',
@@ -72,7 +71,6 @@
                             }
                         });
 
-                        // Kartlara tıklama olayını ekleyelim
                         $('.course-card').click(function() {
                             $(this).toggleClass('selected');
                             var courseId = $(this).data('id');
@@ -99,7 +97,10 @@
     <div th:replace="navbar.html"></div>
     <div class="container">
         <h1>Ders Seçim Ayarları</h1>
-        <form th:action="@{/admin/course-selection/settings}" th:object="${courseSelectionSetting}" method="post">
+        <div th:if="${error}" class="alert alert-danger">
+            <p th:text="${error}"></p>
+        </div>
+        <form th:if="${!#strings.isEmpty(error)}" id="courseSelectionForm" th:action="@{/admin/course-selection/settings}" th:object="${courseSelectionSetting}" method="post">
             <div class="form-group">
                 <label for="department">Departman</label>
                 <select id="department" name="department" class="form-control" th:field="*{department}" required>
@@ -108,21 +109,12 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="startDate">Başlangıç Tarihi</label>
-                <input type="date" id="startDate" name="startDate" class="form-control" th:field="*{startDate}" required>
-            </div>
-            <div class="form-group">
-                <label for="endDate">Bitiş Tarihi</label>
-                <input type="date" id="endDate" name="endDate" class="form-control" th:field="*{endDate}" required>
-            </div>
-            <div class="form-group">
                 <label for="courseList">Dersler</label>
                 <div id="courseList" class="row">
                     <!-- AJAX ile dersler buraya yüklenecek -->
                 </div>
             </div>
             <button type="submit" class="btn btn-primary">Kaydet</button>
-            <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
         </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

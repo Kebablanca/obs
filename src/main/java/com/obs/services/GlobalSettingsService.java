@@ -20,6 +20,13 @@ public class GlobalSettingsService {
     }
 
     public void saveGlobalSettings(GlobalSettingsEntity globalSettings) {
-        globalSettingsRepository.save(globalSettings);
+        GlobalSettingsEntity existingSettings = getGlobalSettings();
+        if (existingSettings != null) {
+            existingSettings.setStartDate(globalSettings.getStartDate());
+            existingSettings.setEndDate(globalSettings.getEndDate());
+            globalSettingsRepository.save(existingSettings);
+        } else {
+            globalSettingsRepository.save(globalSettings);
+        }
     }
 }

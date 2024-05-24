@@ -5,10 +5,7 @@ import com.obs.services.GlobalSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/admin/global-settings")
@@ -22,7 +19,7 @@ public class GlobalSettingsController {
     }
 
     @GetMapping
-    public String showGlobalSettingsForm(Model model) {
+    public String showGlobalSettings(Model model) {
         GlobalSettingsEntity globalSettings = globalSettingsService.getGlobalSettings();
         if (globalSettings == null) {
             globalSettings = new GlobalSettingsEntity();
@@ -32,12 +29,10 @@ public class GlobalSettingsController {
     }
 
     @PostMapping
-    public String saveGlobalSettings(@ModelAttribute GlobalSettingsEntity globalSettings) {
-        GlobalSettingsEntity existingSettings = globalSettingsService.getGlobalSettings();
-        if (existingSettings != null) {
-            globalSettings.setId(existingSettings.getId());
-        }
+    public String saveGlobalSettings(@ModelAttribute GlobalSettingsEntity globalSettings, Model model) {
         globalSettingsService.saveGlobalSettings(globalSettings);
-        return "redirect:/admin/global-settings";
+        model.addAttribute("globalSettings", globalSettings);
+        model.addAttribute("message", "Global settings updated successfully");
+        return "globalSettings";
     }
 }

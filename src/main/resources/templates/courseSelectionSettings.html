@@ -31,10 +31,50 @@
             border: 2px solid #28a745;
             background-color: #d4edda;
         }
+        .hidden {
+            display: none;
+        }
     </style>
+</head>
+<body>
+    <div th:replace="navbar.html"></div>
+    <div class="container">
+        <h1>Ders Seçim Ayarları</h1>
+        <div th:if="${error}" class="alert alert-danger">
+            <p th:text="${error}"></p>
+        </div>
+        <form th:if="${#strings.isEmpty(error)}" id="courseSelectionForm" th:action="@{/admin/course-selection/settings}" th:object="${courseSelectionSetting}" method="post">
+            <div class="form-group">
+                <label for="department">Departman</label>
+                <select id="department" name="department" class="form-control" th:field="*{department}" required>
+                    <option value="" disabled selected>Departman Seçiniz</option>
+                    <option th:each="department : ${departments}" th:value="${department}" th:text="${department}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="courseList">Dersler</label>
+                <div id="courseList" class="row">
+                    <!-- AJAX ile dersler buraya yüklenecek -->
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+        </form>
+    </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Tarih kontrolü için JavaScript kodu
+            var currentDate = new Date().toISOString().split('T')[0];
+            var startDate = [[${startDate}]] ;
+            var endDate = [[${endDate}]] ;
+            
+            if (currentDate < startDate || currentDate > endDate) {
+                $('#courseSelectionForm').addClass('hidden');
+                $('#dateError').removeClass('hidden');
+            }
+
             $('#department').change(function() {
                 var department = $(this).val();
                 $.ajax({
@@ -92,32 +132,5 @@
             });
         });
     </script>
-</head>
-<body>
-    <div th:replace="navbar.html"></div>
-    <div class="container">
-        <h1>Ders Seçim Ayarları</h1>
-        <div th:if="${error}" class="alert alert-danger">
-            <p th:text="${error}"></p>
-        </div>
-        <form th:if="${!#strings.isEmpty(error)}" id="courseSelectionForm" th:action="@{/admin/course-selection/settings}" th:object="${courseSelectionSetting}" method="post">
-            <div class="form-group">
-                <label for="department">Departman</label>
-                <select id="department" name="department" class="form-control" th:field="*{department}" required>
-                    <option value="" disabled selected>Departman Seçiniz</option>
-                    <option th:each="department : ${departments}" th:value="${department}" th:text="${department}"></option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="courseList">Dersler</label>
-                <div id="courseList" class="row">
-                    <!-- AJAX ile dersler buraya yüklenecek -->
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Kaydet</button>
-        </form>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

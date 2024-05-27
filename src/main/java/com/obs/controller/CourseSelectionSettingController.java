@@ -1,12 +1,16 @@
 package com.obs.controller;
 
 import com.obs.entities.GlobalSettingsEntity;
+import com.obs.entities.UserEntity;
 import com.obs.entities.CourseEntity;
 import com.obs.entities.CourseSelectionSettingEntity;
 import com.obs.services.GlobalSettingsService;
+import com.obs.services.UserService;
 import com.obs.services.CourseService;
 import com.obs.services.CourseSelectionSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,16 +29,25 @@ public class CourseSelectionSettingController {
     private final CourseSelectionSettingService courseSelectionSettingService;
     private final CourseService courseService;
     private final GlobalSettingsService globalSettingsService;
+    private final UserService userService;
 
     @Autowired
-    public CourseSelectionSettingController(CourseSelectionSettingService courseSelectionSettingService, CourseService courseService, GlobalSettingsService globalSettingsService) {
+    public CourseSelectionSettingController(CourseSelectionSettingService courseSelectionSettingService, CourseService courseService, GlobalSettingsService globalSettingsService, UserService userService) {
         this.courseSelectionSettingService = courseSelectionSettingService;
         this.courseService = courseService;
         this.globalSettingsService = globalSettingsService;
+        this.userService = userService;
     }
 
     @GetMapping("/settings")
     public String showSettingsForm(Model model) {
+    	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        UserEntity user = userService.findByMail(userEmail);
+        if (user != null) {
+            model.addAttribute("userName", user.getFirstName());
+            model.addAttribute("lastName", user.getLastName());
+        }
         GlobalSettingsEntity globalSettings = globalSettingsService.getGlobalSettings();
         if (globalSettings != null) {
             LocalDate currentDate = LocalDate.now();

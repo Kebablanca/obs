@@ -1,10 +1,8 @@
 package com.obs.controller;
 
 import com.obs.entities.CourseEntity;
-import com.obs.entities.CourseSelectionSettingEntity;
 import com.obs.entities.EnrollmentEntity;
 import com.obs.entities.UserEntity;
-import com.obs.services.CourseSelectionSettingService;
 import com.obs.services.CourseService;
 import com.obs.services.EnrollmentService;
 import com.obs.services.UserService;
@@ -18,21 +16,22 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/student/course-selection")
 public class StudentCourseSelectionController {
 
-    private final CourseSelectionSettingService courseSelectionSettingService;
     private final EnrollmentService enrollmentService;
     private final UserService userService;
     private final CourseService courseService;
 
     @Autowired
-    public StudentCourseSelectionController(CourseSelectionSettingService courseSelectionSettingService, EnrollmentService enrollmentService, UserService userService, CourseService courseService) {
-        this.courseSelectionSettingService = courseSelectionSettingService;
+    public StudentCourseSelectionController(EnrollmentService enrollmentService, UserService userService, CourseService courseService) {
         this.enrollmentService = enrollmentService;
         this.userService = userService;
         this.courseService = courseService;
@@ -43,49 +42,74 @@ public class StudentCourseSelectionController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
         UserEntity student = userService.findByMail(userEmail);
-        
+
         if (student != null) {
-            List<CourseSelectionSettingEntity> settings = courseSelectionSettingService.getSettingsByDepartment(student.getDepartment());
-            List<CourseEntity> availableCourses = settings.stream()
-                .flatMap(setting -> courseService.findCoursesByIds(setting.getCourseIds()).stream())
-                .distinct()
-                .collect(Collectors.toList());
+            List<EnrollmentEntity> enrollments = enrollmentService.findEnrollmentsByUserNumber(student.getNumber());
+            Set<String> enrolledCourseIds = enrollments.stream()
+                    .flatMap(enrollment -> enrollment.getCourseIds().stream())
+                    .collect(Collectors.toSet());
+
+            List<CourseEntity> availableCourses = courseService.findCoursesByDepartment(student.getDepartment()).stream()
+                    .filter(course -> !enrolledCourseIds.contains(course.getId()))
+                    .collect(Collectors.toList());
+
             model.addAttribute("courses", availableCourses);
             model.addAttribute("selectedCourses", new EnrollmentEntity());
         }
-        
+
         return "studentCourseSelection";
     }
 
     @PostMapping("/select")
-    public String saveCourseSelection(@ModelAttribute EnrollmentEntity selectedCourses, Model model) {
-        // Kredi kontrolü ve kayıt işlemi burada yapılacak
+    public String saveCourseSelection(@ModelAttribute("selectedCourses") EnrollmentEntity selectedCourses, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
         UserEntity student = userService.findByMail(userEmail);
-        
+
         if (student != null) {
             List<EnrollmentEntity> currentEnrollments = enrollmentService.findEnrollmentsByUserNumber(student.getNumber());
+            Set<String> enrolledCourseIds = currentEnrollments.stream()
+                    .flatMap(enrollment -> enrollment.getCourseIds().stream())
+                    .collect(Collectors.toSet());
+
+            List<String> newCourseIds = selectedCourses.getCourseIds().stream()
+                    .filter(courseId -> !enrolledCourseIds.contains(courseId))
+                    .collect(Collectors.toList());
+
             int currentCredits = currentEnrollments.stream()
                     .flatMap(enrollment -> enrollment.getCourseIds().stream())
                     .map(courseService::findCourseById)
                     .filter(course -> course != null)
                     .mapToInt(CourseEntity::getCredits)
                     .sum();
-            
-            List<CourseEntity> newCourses = courseService.findCoursesByIds(selectedCourses.getCourseIds());
-            int newCredits = newCourses.stream().mapToInt(CourseEntity::getCredits).sum();
-            
+
+            int newCredits = newCourseIds.stream()
+                    .map(courseService::findCourseById)
+                    .filter(course -> course != null)
+                    .mapToInt(CourseEntity::getCredits)
+                    .sum();
+
             if (currentCredits + newCredits <= 45) {
-                selectedCourses.setUserNumber(student.getNumber());
-                enrollmentService.saveEnrollments(selectedCourses);
+                if (!newCourseIds.isEmpty()) {
+                    EnrollmentEntity existingEnrollment = currentEnrollments.isEmpty() ? new EnrollmentEntity() : currentEnrollments.get(0);
+                    existingEnrollment.setUserNumber(student.getNumber());
+
+                    Set<String> allCourseIds = new HashSet<>(existingEnrollment.getCourseIds() == null ? new ArrayList<>() : existingEnrollment.getCourseIds());
+                    allCourseIds.addAll(newCourseIds);
+                    existingEnrollment.setCourseIds(allCourseIds.stream().collect(Collectors.toList()));
+
+                    enrollmentService.saveEnrollments(existingEnrollment);
+                }
                 return "redirect:/student/course-selection/select";
             } else {
                 model.addAttribute("error", "Toplam kredi 45'i geçemez.");
+                model.addAttribute("courses", courseService.findCoursesByDepartment(student.getDepartment()).stream()
+                        .filter(course -> !enrolledCourseIds.contains(course.getId()))
+                        .collect(Collectors.toList()));
                 return "studentCourseSelection";
             }
         }
-        
+
         return "redirect:/login";
     }
 }

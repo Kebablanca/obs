@@ -3,6 +3,7 @@ package com.obs.entities;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document("enrollments")
@@ -10,7 +11,7 @@ public class EnrollmentEntity {
     @Id
     private String id;
     private Long userNumber; // Kullanıcı numarası
-    private List<String> courseIds; // Ders ID'leri listesi
+    private List<String> courseIds = new ArrayList<>(); // Ders ID'leri listesi
 
     // Getters and Setters
     public String getId() {

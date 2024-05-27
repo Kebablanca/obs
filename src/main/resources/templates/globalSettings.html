@@ -1,46 +1,61 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Settings</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style type="text/css">
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: url('@{/Image/body.jpg}');
-            font-size: 12px;
-            line-height: 22px;
-            min-height: 100%;
-            position: relative;
-        }
-        .container {
-            margin-top: 50px;
-            box-shadow: 1px 1px 1px 1px #999;
-            padding: 20px;
-            background-color: white;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Settings</title>
+<link
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+	rel="stylesheet">
+<style type="text/css">
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	background: url('./Image/body.jpg');
+	font-size: 12px;
+	line-height: 22px;
+	min-height: 100%;
+	position: relative;
+}
+
+.container-fluid {
+	display: flex;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+</style>
 </head>
 <body>
-    <div th:replace="navbar.html"></div>
-    <div class="container">
-        <h1>Global Settings</h1>
-        <form th:action="@{/admin/global-settings}" th:object="${globalSettings}" method="post">
-            <div class="form-group">
-                <label for="startDate">Start Date</label>
-                <input type="date" id="startDate" name="startDate" class="form-control" th:field="*{startDate}" required>
-            </div>
-            <div class="form-group">
-                <label for="endDate">End Date</label>
-                <input type="date" id="endDate" name="endDate" class="form-control" th:field="*{endDate}" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Save</button>
-        </form>
-        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<div th:replace="navbar.html"></div>
+	<div class="container-fluid">
+		<div th:replace="navbar3.html"></div>
+		<div style="width: 100%;">
+			<div class="container" th:replace="staffNavbar.html"></div>
+			<div class="container mt-5"
+				style="width: 60%; box-shadow: 3px 3px 3px 3px #999;">
+				<h1>Ders Seçim Tarihi Ayarla</h1>
+				<form th:action="@{/admin/global-settings}"
+					th:object="${globalSettings}" method="post">
+					<div class="form-group">
+						<label for="startDate">Start Date</label> <input type="date"
+							id="startDate" name="startDate" class="form-control"
+							th:field="*{startDate}" required>
+					</div>
+					<div class="form-group">
+						<label for="endDate">End Date</label> <input type="date"
+							id="endDate" name="endDate" class="form-control"
+							th:field="*{endDate}" required>
+					</div>
+					<button type="submit" class="btn btn-primary">Save</button>
+				</form>
+				<div th:if="${message}" class="alert alert-success"
+					th:text="${message}"></div>
+			</div>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

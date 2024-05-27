@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -41,7 +42,7 @@ public class CourseSelectionSettingController {
 
     @GetMapping("/settings")
     public String showSettingsForm(Model model) {
-    	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
         UserEntity user = userService.findByMail(userEmail);
         if (user != null) {
@@ -82,6 +83,19 @@ public class CourseSelectionSettingController {
                 .collect(Collectors.toList());
         model.addAttribute("departments", departments);
         model.addAttribute("courseSelectionSetting", new CourseSelectionSettingEntity());
+
+        // Mevcut ders ayarlarını al ve modele ekle
+        Map<String, List<CourseEntity>> existingCoursesByDepartment = new HashMap<>();
+        for (String department : departments) {
+            Optional<CourseSelectionSettingEntity> setting = courseSelectionSettingService.getSettingsByDepartment(department);
+            if (setting.isPresent()) {
+                List<String> courseIds = setting.get().getCourseIds();
+                List<CourseEntity> courses = courseService.findCoursesByIds(courseIds);
+                existingCoursesByDepartment.put(department, courses);
+            }
+        }
+        model.addAttribute("existingCoursesByDepartment", existingCoursesByDepartment);
+
         return "courseSelectionSettings";
     }
 
@@ -89,16 +103,15 @@ public class CourseSelectionSettingController {
     public String saveSettings(@ModelAttribute CourseSelectionSettingEntity courseSelectionSetting, @RequestParam(required = false) List<String> courseIds, Model model) {
         if (courseIds != null) {
             for (String courseId : courseIds) {
-                if (courseSelectionSettingService.isCourseAlreadySelected(courseId)) {
-                    model.addAttribute("error", "Ders zaten seçildi: " + courseService.findCourseById(courseId).getCourseName());
-                    return "courseSelectionSettings";
-                }
+                courseSelectionSettingService.addCourseToDepartment(courseSelectionSetting.getDepartment(), courseId);
             }
-            courseSelectionSetting.setCourseIds(courseIds);
-        } else {
-            courseSelectionSetting.setCourseIds(Collections.emptyList());
         }
-        courseSelectionSettingService.saveCourseSelectionSetting(courseSelectionSetting);
+        return "redirect:/admin/course-selection/settings";
+    }
+
+    @PostMapping("/settings/remove")
+    public String removeCourseFromSettings(@RequestParam String courseId, @RequestParam String department, Model model) {
+        courseSelectionSettingService.removeCourseFromDepartment(department, courseId);
         return "redirect:/admin/course-selection/settings";
     }
 
@@ -106,14 +119,23 @@ public class CourseSelectionSettingController {
     @ResponseBody
     public Map<String, Object> getCoursesByDepartment(@RequestParam String department) {
         List<CourseEntity> courses = courseService.findCoursesByDepartment(department);
-        List<CourseSelectionSettingEntity> settings = courseSelectionSettingService.getSettingsByDepartment(department);
-        List<String> selectedCourseIds = settings.stream()
-                .flatMap(setting -> setting.getCourseIds().stream())
+        Optional<CourseSelectionSettingEntity> setting = courseSelectionSettingService.getSettingsByDepartment(department);
+        List<String> selectedCourseIds = setting.map(CourseSelectionSettingEntity::getCourseIds).orElse(Collections.emptyList());
+
+        // Mevcut dersleri filtrele
+        List<CourseEntity> availableCourses = courses.stream()
+                .filter(course -> !selectedCourseIds.contains(course.getId()))
                 .collect(Collectors.toList());
 
         Map<String, Object> response = new HashMap<>();
-        response.put("courses", courses);
+        response.put("courses", availableCourses); // Yalnızca mevcut olmayan dersleri döndür
         response.put("selectedCourseIds", selectedCourseIds);
         return response;
     }
 }
+
+
+
+
+
+

@@ -33,7 +33,10 @@
     <div th:replace="navbar.html"></div>
     <div class="container">
         <h1>Ders Seçim</h1>
-        <form th:action="@{/student/course-selection/select}" th:object="${selectedCoursesEntity}" method="post">
+        <div th:if="${!isWithinDateRange}" class="alert alert-warning">
+            Ders seçim haftası değil.
+        </div>
+        <form th:if="${isWithinDateRange}" th:action="@{/student/course-selection/select}" th:object="${selectedCoursesEntity}" method="post">
             <div class="form-group">
                 <label for="courseList">Dersler</label>
                 <div id="courseList" class="row">

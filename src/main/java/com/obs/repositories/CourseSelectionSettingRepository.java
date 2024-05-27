@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface CourseSelectionSettingRepository extends MongoRepository<CourseSelectionSettingEntity, String> {
-    List<CourseSelectionSettingEntity> findByDepartment(String department);
+    Optional<CourseSelectionSettingEntity> findByDepartment(String department);
     Optional<CourseSelectionSettingEntity> findByCourseIdsContains(String courseId);
 }
+

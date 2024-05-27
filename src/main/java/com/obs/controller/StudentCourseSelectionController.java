@@ -2,9 +2,11 @@ package com.obs.controller;
 
 import com.obs.entities.CourseEntity;
 import com.obs.entities.EnrollmentEntity;
+import com.obs.entities.GlobalSettingsEntity;
 import com.obs.entities.UserEntity;
 import com.obs.services.CourseService;
 import com.obs.services.EnrollmentService;
+import com.obs.services.GlobalSettingsService;
 import com.obs.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,12 +33,14 @@ public class StudentCourseSelectionController {
     private final EnrollmentService enrollmentService;
     private final UserService userService;
     private final CourseService courseService;
+    private final GlobalSettingsService globalSettingsService;
 
     @Autowired
-    public StudentCourseSelectionController(EnrollmentService enrollmentService, UserService userService, CourseService courseService) {
+    public StudentCourseSelectionController(EnrollmentService enrollmentService, UserService userService, CourseService courseService, GlobalSettingsService globalSettingsService) {
         this.enrollmentService = enrollmentService;
         this.userService = userService;
         this.courseService = courseService;
+        this.globalSettingsService = globalSettingsService;
     }
 
     @GetMapping("/select")
@@ -45,6 +50,13 @@ public class StudentCourseSelectionController {
         UserEntity student = userService.findByMail(userEmail);
 
         if (student != null) {
+            GlobalSettingsEntity globalSettings = globalSettingsService.getGlobalSettings();
+            LocalDate currentDate = LocalDate.now();
+            boolean isWithinDateRange = currentDate.isAfter(LocalDate.parse(globalSettings.getStartDate())) 
+                                        && currentDate.isBefore(LocalDate.parse(globalSettings.getEndDate()));
+
+            model.addAttribute("isWithinDateRange", isWithinDateRange);
+
             List<EnrollmentEntity> enrollments = enrollmentService.findEnrollmentsByUserNumber(student.getNumber());
             Set<String> enrolledCourseIds = enrollments.stream()
                     .flatMap(enrollment -> enrollment.getCourseIds().stream())

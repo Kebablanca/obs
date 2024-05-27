@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -53,15 +54,21 @@ public class StudentCourseSelectionController {
                     .filter(course -> !enrolledCourseIds.contains(course.getId()))
                     .collect(Collectors.toList());
 
+            List<CourseEntity> selectedCourses = enrollments.stream()
+                    .flatMap(enrollment -> enrollment.getCourseIds().stream())
+                    .map(courseService::findCourseById)
+                    .collect(Collectors.toList());
+
             model.addAttribute("courses", availableCourses);
-            model.addAttribute("selectedCourses", new EnrollmentEntity());
+            model.addAttribute("selectedCourses", selectedCourses);
+            model.addAttribute("selectedCoursesEntity", new EnrollmentEntity());
         }
 
         return "studentCourseSelection";
     }
 
     @PostMapping("/select")
-    public String saveCourseSelection(@ModelAttribute("selectedCourses") EnrollmentEntity selectedCourses, Model model) {
+    public String saveCourseSelection(@ModelAttribute("selectedCoursesEntity") EnrollmentEntity selectedCourses, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
         UserEntity student = userService.findByMail(userEmail);
@@ -96,7 +103,7 @@ public class StudentCourseSelectionController {
 
                     Set<String> allCourseIds = new HashSet<>(existingEnrollment.getCourseIds() == null ? new ArrayList<>() : existingEnrollment.getCourseIds());
                     allCourseIds.addAll(newCourseIds);
-                    existingEnrollment.setCourseIds(allCourseIds.stream().collect(Collectors.toList()));
+                    existingEnrollment.setCourseIds(new ArrayList<>(allCourseIds));
 
                     enrollmentService.saveEnrollments(existingEnrollment);
                 }
@@ -111,5 +118,23 @@ public class StudentCourseSelectionController {
         }
 
         return "redirect:/login";
+    }
+
+    @PostMapping("/remove")
+    public String removeCourse(@RequestParam("courseId") String courseId, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        UserEntity student = userService.findByMail(userEmail);
+
+        if (student != null) {
+            List<EnrollmentEntity> enrollments = enrollmentService.findEnrollmentsByUserNumber(student.getNumber());
+            if (!enrollments.isEmpty()) {
+                EnrollmentEntity existingEnrollment = enrollments.get(0);
+                existingEnrollment.getCourseIds().remove(courseId);
+                enrollmentService.saveEnrollments(existingEnrollment);
+            }
+        }
+
+        return "redirect:/student/course-selection/select";
     }
 }

@@ -33,7 +33,7 @@
     <div th:replace="navbar.html"></div>
     <div class="container">
         <h1>Ders Seçim</h1>
-        <form th:action="@{/student/course-selection/select}" th:object="${selectedCourses}" method="post">
+        <form th:action="@{/student/course-selection/select}" th:object="${selectedCoursesEntity}" method="post">
             <div class="form-group">
                 <label for="courseList">Dersler</label>
                 <div id="courseList" class="row">
@@ -53,6 +53,23 @@
             <button type="submit" class="btn btn-primary">Kaydet</button>
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
         </form>
+        <h2>Seçilen Dersler</h2>
+        <div id="selectedCourses" class="row">
+            <div th:each="course : ${selectedCourses}" class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${course.courseName}"></h5>
+                        <p class="card-text">Kod: <span th:text="${course.courseCode}"></span></p>
+                        <p class="card-text">Hoca: <span th:text="${course.instructor}"></span></p>
+                        <p class="card-text">Kredi: <span th:text="${course.credits}"></span></p>
+                        <form th:action="@{/student/course-selection/remove}" method="post">
+                            <input type="hidden" name="courseId" th:value="${course.id}">
+                            <button type="submit" class="btn btn-danger">Kaldır</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

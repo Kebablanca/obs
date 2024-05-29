@@ -116,7 +116,7 @@ public class CourseSelectionSettingController {
                 .collect(Collectors.toList());
 
         Map<String, Object> response = new HashMap<>();
-        response.put("courses", availableCourses); // Yalnızca mevcut olmayan dersleri döndür
+        response.put("courses", availableCourses); 
         response.put("selectedCourseIds", selectedCourseIds);
         return response;
     }

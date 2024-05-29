@@ -72,11 +72,17 @@ body {
             </div>
         </div>
     </div>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         $(document).ready(function() {
+            // CSRF token'ını meta etiketinden al
+            var csrfToken = $('meta[name="_csrf"]').attr('content');
+            var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
             // Tarih kontrolü için JavaScript kodu
             var currentDate = new Date().toISOString().split('T')[0];
             var startDate = [[${startDate}]] ;
@@ -136,6 +142,9 @@ body {
                     url: '/admin/course-selection/selected-courses',
                     type: 'GET',
                     data: { department: department },
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader(csrfHeader, csrfToken);
+                    },
                     success: function(response) {
                         $('#existingCoursesList').empty();
                         $.each(response, function(index, course) {
@@ -150,7 +159,7 @@ body {
                                             <form action="/admin/course-selection/settings/remove" method="post">
                                                 <input type="hidden" name="courseId" value="${course.id}">
                                                 <input type="hidden" name="department" value="${department}">
-                                                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                                                <input type="hidden" name="_csrf" value="${csrfToken}"/>
                                                 <button type="submit" class="btn btn-danger">Sil</button>
                                             </form>
                                         </div>

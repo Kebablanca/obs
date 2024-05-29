@@ -47,6 +47,7 @@ body {
                     <p th:text="${error}"></p>
                 </div>            
                 <form th:if="${#strings.isEmpty(error)}" id="courseSelectionForm" th:action="@{/admin/course-selection/settings}" th:object="${courseSelectionSetting}" method="post">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
                     <div class="form-group">
                         <label for="department">Departman</label> 
                         <select id="department" name="department" class="form-control" th:field="*{department}" required>
@@ -64,25 +65,8 @@ body {
                 </form>
                 <h2>Eklenen Dersler</h2>
                 <div id="existingCourses">
-                    <div th:each="entry : ${existingCoursesByDepartment}">
-                        <h3 th:text="${entry.key}"></h3>
-                        <div class="row">
-                            <div th:each="course : ${entry.value}" class="col-md-4">
-                                <div class="card previously-selected">
-                                    <div class="card-body">
-                                        <h5 class="card-title" th:text="${course.courseName}"></h5>
-                                        <p class="card-text">Kod: <span th:text="${course.courseCode}"></span></p>
-                                        <p class="card-text">Hoca: <span th:text="${course.instructor}"></span></p>
-                                        <p class="card-text">Kredi: <span th:text="${course.credits}"></span></p>
-                                        <form th:action="@{/admin/course-selection/settings/remove}" method="post">
-                                            <input type="hidden" name="courseId" th:value="${course.id}">
-                                            <input type="hidden" name="department" th:value="${entry.key}">
-                                            <button type="submit" class="btn btn-danger">Sil</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div id="existingCoursesList" class="row">
+                        <!-- AJAX ile eklenen dersler buraya yüklenecek -->
                     </div>
                 </div>
             </div>
@@ -140,6 +124,39 @@ body {
                             } else {
                                 $('input[name="courseIds"][value="' + courseId + '"]').remove();
                             }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error: ", status, error);
+                    }
+                });
+
+                // Mevcut dersleri yükleme
+                $.ajax({
+                    url: '/admin/course-selection/selected-courses',
+                    type: 'GET',
+                    data: { department: department },
+                    success: function(response) {
+                        $('#existingCoursesList').empty();
+                        $.each(response, function(index, course) {
+                            var card = `
+                                <div class="col-md-4">
+                                    <div class="card previously-selected">
+                                        <div class="card-body">
+                                            <h5 class="card-title">${course.courseName}</h5>
+                                            <p class="card-text">Kod: ${course.courseCode}</p>
+                                            <p class="card-text">Hoca: ${course.instructor}</p>
+                                            <p class="card-text">Kredi: ${course.credits}</p>
+                                            <form action="/admin/course-selection/settings/remove" method="post">
+                                                <input type="hidden" name="courseId" value="${course.id}">
+                                                <input type="hidden" name="department" value="${department}">
+                                                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                                                <button type="submit" class="btn btn-danger">Sil</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            $('#existingCoursesList').append(card);
                         });
                     },
                     error: function(xhr, status, error) {

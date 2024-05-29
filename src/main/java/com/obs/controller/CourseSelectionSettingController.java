@@ -84,18 +84,6 @@ public class CourseSelectionSettingController {
         model.addAttribute("departments", departments);
         model.addAttribute("courseSelectionSetting", new CourseSelectionSettingEntity());
 
-        // Mevcut ders ayarlarını al ve modele ekle
-        Map<String, List<CourseEntity>> existingCoursesByDepartment = new HashMap<>();
-        for (String department : departments) {
-            Optional<CourseSelectionSettingEntity> setting = courseSelectionSettingService.getSettingsByDepartment(department);
-            if (setting.isPresent()) {
-                List<String> courseIds = setting.get().getCourseIds();
-                List<CourseEntity> courses = courseService.findCoursesByIds(courseIds);
-                existingCoursesByDepartment.put(department, courses);
-            }
-        }
-        model.addAttribute("existingCoursesByDepartment", existingCoursesByDepartment);
-
         return "courseSelectionSettings";
     }
 
@@ -131,6 +119,17 @@ public class CourseSelectionSettingController {
         response.put("courses", availableCourses); // Yalnızca mevcut olmayan dersleri döndür
         response.put("selectedCourseIds", selectedCourseIds);
         return response;
+    }
+
+    @GetMapping("/selected-courses")
+    @ResponseBody
+    public List<CourseEntity> getSelectedCoursesByDepartment(@RequestParam String department) {
+        Optional<CourseSelectionSettingEntity> setting = courseSelectionSettingService.getSettingsByDepartment(department);
+        if (setting.isPresent()) {
+            List<String> courseIds = setting.get().getCourseIds();
+            return courseService.findCoursesByIds(courseIds);
+        }
+        return Collections.emptyList();
     }
 }
 

@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
 import com.obs.entities.UserEntity;
 import com.obs.repositories.UserRepository;
 import com.obs.services.UserDetailsServiceImpl;
@@ -49,6 +51,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+        .csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            )
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests((authz) -> authz
             		.requestMatchers("/search").hasRole("STAFF")
@@ -56,7 +61,8 @@ public class SecurityConfig {
             		.requestMatchers("/users/add").hasRole("STAFF")
             		.requestMatchers("/courses/add").hasRole("STAFF")
             		.requestMatchers("/admin/course-selection/settings").hasRole("STAFF")
-            		.requestMatchers("/admin/global-settings").hasRole("STAFF")
+            		.requestMatchers("/admin/course-selection/settings").hasRole("STAFF")
+            		.requestMatchers("/admin/course-selection/selected-courses").hasRole("STAFF")
             		.requestMatchers("/student/course-selection/select").hasRole("STUDENT")
                     .anyRequest().authenticated() 
                 )

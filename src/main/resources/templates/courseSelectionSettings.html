@@ -51,7 +51,7 @@ body {
                     <div class="form-group">
                         <label for="department">Departman</label> 
                         <select id="department" name="department" class="form-control" th:field="*{department}" required>
-                            <option value="" disabled selected>Departman Seçiniz</option>
+                            <option value="" enabled selected>--Departman Seçiniz--</option>
                             <option th:each="department : ${departments}" th:value="${department}" th:text="${department}"></option>
                         </select>
                     </div>
@@ -61,7 +61,7 @@ body {
                             <!-- AJAX ile dersler buraya yüklenecek -->
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                    <button type="submit" class="btn btn-primary mb-4">Kaydet</button>
                 </form>
                 <h2>Eklenen Dersler</h2>
                 <div id="existingCourses">

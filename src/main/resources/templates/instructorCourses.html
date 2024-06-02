@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBS - Instructor Courses</title>
+    <title>Instructor Courses</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -19,6 +19,14 @@
             display: flex;
             padding-left: 0px;
             padding-right: 0px;
+        }
+
+        .course-card {
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            background-color: #f0f8ff;
         }
     </style>
 </head>
@@ -42,15 +50,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="course : ${courses}">
-                                <td th:text="${course.courseCode}">Ders Kodu</td>
+                            <tr th:each="course : ${courses}"  >
+                                <td>
+                                    <a th:href="@{/instructor-course-{courseId}(courseId=${course.id})}" th:text="${course.courseCode}">Ders Kodu</a>
+                                </td>
                                 <td th:text="${course.courseName}">Ders Adı</td>
                                 <td th:text="${course.credits}">AKTS</td>
                                 <td>
-                                    <input type="number" class="form-control" name="midtermWeight" th:value="${course.midtermWeight}">
+                                    <input type="number" class="form-control" name="midtermWeight" th:value="${course.midtermWeight}" required>
                                 </td>
                                 <td>
-                                    <input type="number" class="form-control" name="finalWeight" th:value="${course.finalWeight}">
+                                    <input type="number" class="form-control" name="finalWeight" th:value="${course.finalWeight}" required>
                                 </td>
                                 <input type="hidden" name="courseId" th:value="${course.id}">
                             </tr>

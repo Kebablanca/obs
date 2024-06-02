@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -34,15 +33,37 @@ public class GradeController {
         this.enrollmentService = enrollmentService;
     }
 
-    @GetMapping("/instructor/course/{courseId}/students")
+    @GetMapping("/instructorCourses")
+    public String instructorCourses(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        UserEntity user = userService.findByMail(userEmail);
+        if (user != null) {
+            model.addAttribute("userName", user.getFirstName());
+            model.addAttribute("lastName", user.getLastName());
+        }
+
+        if (user != null) {
+            List<CourseEntity> courses = courseService.findCoursesByInstructorNumber(user.getNumber());
+            model.addAttribute("courses", courses);
+        }
+
+        return "instructorCourses";
+    }
+
+    @GetMapping("/instructor-course-{courseId}")
     public String getCourseStudents(@PathVariable String courseId, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
-        UserEntity instructor = userService.findByMail(userEmail);
+        UserEntity user = userService.findByMail(userEmail);
+        if (user != null) {
+            model.addAttribute("userName", user.getFirstName());
+            model.addAttribute("lastName", user.getLastName());
+        }
 
-        if (instructor != null) {
+        if (user != null) {
             CourseEntity course = courseService.findCourseById(courseId);
-            if (course != null && course.getInstructorNumber().equals(instructor.getNumber())) {
+            if (course != null && course.getInstructorNumber().equals(user.getNumber())) {
                 List<EnrollmentEntity> enrollments = enrollmentService.findEnrollmentsByCourseId(courseId);
                 List<UserEntity> students = enrollments.stream()
                         .map(enrollment -> userService.findByNumber(enrollment.getUserNumber()))
@@ -71,6 +92,6 @@ public class GradeController {
             }
         }
 
-        return "redirect:/instructor/course/" + courseId + "/students";
+        return "redirect:/instructor-course-" + courseId ;
     }
 }

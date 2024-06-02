@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface CourseRepository extends MongoRepository<CourseEntity, String> {
     List<CourseEntity> findByDepartment(String department);
-    List<CourseEntity> findByInstructorNumber(Long instructorNumber);
-
+    List<CourseEntity> findByInstructorNumber(Long instructorNumber); // Yeni metod
 }

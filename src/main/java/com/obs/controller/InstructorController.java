@@ -9,7 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -27,20 +26,6 @@ public class InstructorController {
         this.userService = userService;
     }
 
-    @GetMapping("/instructor/courses")
-    public String getInstructorCourses(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = authentication.getName();
-        UserEntity instructor = userService.findByMail(userEmail);
-
-        if (instructor != null) {
-            List<CourseEntity> courses = courseService.findCoursesByInstructorNumber(instructor.getNumber());
-            model.addAttribute("courses", courses);
-        }
-
-        return "instructorCourses";
-    }
-
     @PostMapping("/instructor/courses/update")
     public String updateCourseWeights(@RequestParam("courseId") List<String> courseIds,
                                       @RequestParam("midtermWeight") List<Integer> midtermWeights,
@@ -53,7 +38,6 @@ public class InstructorController {
                 courseService.saveCourse(course);
             }
         }
-
-        return "redirect:/instructor/courses";
+        return "redirect:/instructorCourses";
     }
 }

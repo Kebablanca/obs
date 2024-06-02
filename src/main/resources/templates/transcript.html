@@ -44,9 +44,10 @@
                     <tbody>
                         <tr th:each="course : ${courses}">
                             <td th:text="${course.courseCode}"></td>
-                            <td th:text="${course.courseName}"></td>
+                            <td th:text="${#strings.substring(course.courseName, 0, course.courseName.length() - 4)}"></td>
                             <td th:text="${course.credits}"></td>
-                            <td th:text="${course.courseName.split(' ')[1]}"></td>
+                            <td th:text="${#strings.substring(course.courseName, course.courseName.length() - 4)}"></td>
+
                         </tr>
                     </tbody>
                 </table>

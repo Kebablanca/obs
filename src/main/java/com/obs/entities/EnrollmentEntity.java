@@ -3,15 +3,18 @@ package com.obs.entities;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Document("enrollments")
 public class EnrollmentEntity {
     @Id
     private String id;
     private Long userNumber; // Kullanıcı numarası
-    private List<String> courseIds = new ArrayList<>(); // Ders ID'leri listesi
+    private List<String> courseIds; // Ders ID'leri listesi
+    private Map<String, Integer> midtermGrades = new HashMap<>(); // Ders ID'si ve vize notu
+    private Map<String, Integer> finalGrades = new HashMap<>(); // Ders ID'si ve final notu
 
     // Getters and Setters
     public String getId() {
@@ -36,5 +39,21 @@ public class EnrollmentEntity {
 
     public void setCourseIds(List<String> courseIds) {
         this.courseIds = courseIds;
+    }
+
+    public Map<String, Integer> getMidtermGrades() {
+        return midtermGrades;
+    }
+
+    public void setMidtermGrades(Map<String, Integer> midtermGrades) {
+        this.midtermGrades = midtermGrades;
+    }
+
+    public Map<String, Integer> getFinalGrades() {
+        return finalGrades;
+    }
+
+    public void setFinalGrades(Map<String, Integer> finalGrades) {
+        this.finalGrades = finalGrades;
     }
 }

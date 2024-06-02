@@ -55,7 +55,10 @@ public class UserController {
             return "adminPage";
         } else if (request.isUserInRole("ROLE_STUDENT")) {
             return "userPage";
-        } else {
+        }
+        else if (request.isUserInRole("ROLE_TEACHER")) {
+            return "userPage";
+        }else {
             return "errorPage"; 
         }
     }

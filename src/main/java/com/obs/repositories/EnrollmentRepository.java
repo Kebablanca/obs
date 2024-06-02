@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface EnrollmentRepository extends MongoRepository<EnrollmentEntity, String> {
     List<EnrollmentEntity> findByUserNumber(Long userNumber);
+    List<EnrollmentEntity> findByCourseIdsContaining(String courseId);
+    EnrollmentEntity findByUserNumberAndCourseIdsContaining(Long userNumber, String courseId);
 }

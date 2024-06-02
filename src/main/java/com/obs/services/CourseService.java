@@ -36,4 +36,9 @@ public class CourseService {
     public List<CourseEntity> findCoursesByDepartment(String department) {
         return courseRepository.findByDepartment(department);
     }
+    
+    public List<CourseEntity> findCoursesByInstructorNumber(Long instructorNumber) {
+        return courseRepository.findByInstructorNumber(instructorNumber);
+    }
+
 }

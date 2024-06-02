@@ -79,11 +79,10 @@ body {
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         $(document).ready(function() {
-            // CSRF token'ını meta etiketinden al
             var csrfToken = $('meta[name="_csrf"]').attr('content');
             var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
 
-            // Tarih kontrolü için JavaScript kodu
+
             var currentDate = new Date().toISOString().split('T')[0];
             var startDate = [[${startDate}]] ;
             var endDate = [[${endDate}]] ;

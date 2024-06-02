@@ -133,8 +133,3 @@ public class CourseSelectionSettingController {
     }
 }
 
-
-
-
-
-

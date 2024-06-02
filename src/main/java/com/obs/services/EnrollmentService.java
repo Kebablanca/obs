@@ -27,6 +27,18 @@ public class EnrollmentService {
         return enrollmentRepository.findByUserNumber(userNumber);
     }
 
+    public List<EnrollmentEntity> findEnrollmentsByCourseId(String courseId) {
+        return enrollmentRepository.findByCourseIdsContaining(courseId);
+    }
+
+    public EnrollmentEntity findByUserNumberAndCourseId(Long userNumber, String courseId) {
+        return enrollmentRepository.findByUserNumberAndCourseIdsContaining(userNumber, courseId);
+    }
+
+    public void saveEnrollment(EnrollmentEntity enrollment) {
+        enrollmentRepository.save(enrollment);
+    }
+
     public List<CourseEntity> findCoursesByUserNumber(Long userNumber) {
         List<EnrollmentEntity> enrollments = findEnrollmentsByUserNumber(userNumber);
         return enrollments.stream()

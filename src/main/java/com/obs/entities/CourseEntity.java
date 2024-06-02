@@ -15,7 +15,9 @@ public class CourseEntity {
     private Long instructorNumber;
     private List<Long> enrolledUserNumbers; 
     private int credits;
-    private String department; 
+    private String department;
+    private int midtermWeight;
+    private int finalWeight;
 
     // Getters and Setters
     public String getId() {
@@ -80,5 +82,21 @@ public class CourseEntity {
 
     public void setDepartment(String department) {
         this.department = department;
+    }
+    
+    public int getMidtermWeight() {
+        return midtermWeight;
+    }
+
+    public void setMidtermWeight(int midtermWeight) {
+        this.midtermWeight = midtermWeight;
+    }
+
+    public int getFinalWeight() {
+        return finalWeight;
+    }
+
+    public void setFinalWeight(int finalWeight) {
+        this.finalWeight = finalWeight;
     }
 }

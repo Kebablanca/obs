@@ -1,7 +1,10 @@
 package com.obs.controller;
 
+import com.obs.entities.Announcement;
 import com.obs.entities.UserEntity;
+import com.obs.repositories.AnnouncementRepository;
 import com.obs.repositories.UserRepository;
+import com.obs.services.AnnouncementService;
 import com.obs.services.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,12 +31,14 @@ public class UserController {
 	private final UserRepository userRepository;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-
+    private final AnnouncementService announcementService;
+    
     @Autowired
-    public UserController(UserService userService, PasswordEncoder passwordEncoder , UserRepository userRepository) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder , UserRepository userRepository,AnnouncementService announcementService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;       
+        this.userRepository = userRepository;
+        this.announcementService = announcementService;
     }
     
     
@@ -52,11 +57,18 @@ public class UserController {
         
 
         if (request.isUserInRole("ROLE_STAFF")) {
+            List<Announcement> announcements = announcementService.findAll();
+            model.addAttribute("announcements", announcements);
+            model.addAttribute("announcement", new Announcement());  // Ensure this line is present
             return "adminPage";
         } else if (request.isUserInRole("ROLE_STUDENT")) {
+            List<Announcement> announcements = announcementService.findAll();
+            model.addAttribute("announcements", announcements);
             return "userPage";
         }
         else if (request.isUserInRole("ROLE_TEACHER")) {
+            List<Announcement> announcements = announcementService.findAll();
+            model.addAttribute("announcements", announcements);
             return "userPage";
         }else {
             return "errorPage"; 

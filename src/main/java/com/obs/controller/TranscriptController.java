@@ -36,10 +36,14 @@ public class TranscriptController {
     public String getTranscript(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
-        UserEntity student = userService.findByMail(userEmail);
+        UserEntity user = userService.findByMail(userEmail);
+        if (user != null) {
+            model.addAttribute("userName", user.getFirstName());
+            model.addAttribute("lastName", user.getLastName());
+        }
 
-        if (student != null) {
-            List<EnrollmentEntity> enrollments = enrollmentService.findEnrollmentsByUserNumber(student.getNumber());
+        if (user != null) {
+            List<EnrollmentEntity> enrollments = enrollmentService.findEnrollmentsByUserNumber(user.getNumber());
             List<CourseEntity> courses = enrollments.stream()
                     .flatMap(enrollment -> enrollment.getCourseIds().stream().map(courseService::findCourseById))
                     .collect(Collectors.toList());
@@ -72,7 +76,7 @@ public class TranscriptController {
 
             double gpa = weightedGradesSum / totalCredits;
 
-            model.addAttribute("student", student);
+            model.addAttribute("student", user);
             model.addAttribute("courses", courses);
             model.addAttribute("totalCredits", totalCredits);
             model.addAttribute("gpa", gpa);

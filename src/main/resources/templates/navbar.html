@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-light"
-	style="background: url('./Image/sidebar.jpg') repeat 0 0; background-color:#636363">
+	style="background: url('/images/sidebar.jpg') repeat 0 0; background-color:#636363">
 	<div class="container-fluid">
 		<a class="navbar-brand d-flex align-items-center" href="#"> <img
-			src="./Image/logo.png" width="65" height="60"
+			src="/images/logo.png" width="65" height="60"
 			class="d-inline-block align-top" alt="">
 			<div class="ml-2">
 				<h5 style="color: white; margin: 0;">Ankara Üniversitesi</h5>
@@ -19,10 +19,14 @@
 
 		<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav ml-auto">
-				<li class="nav-item"><a class="nav-link"
-					href="http://localhost:8080/logout"> <img
-						src="./Image/logout.png" width="25" height="25" alt="">
-				</a></li>
+				<li class="nav-item">
+					<form action="/logout" method="post" th:action="@{/logout}">
+						<input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+						<button type="submit" class="btn btn-link nav-link" style="padding: 0;">
+							<img src="/images/logout.png" width="25" height="25" alt="">
+						</button>
+					</form>
+				</li>
 			</ul>
 		</div>
 	</div>

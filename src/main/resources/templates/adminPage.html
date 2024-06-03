@@ -1,46 +1,60 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OBS</title>
-<link
-	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-	rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duyuru Ekle</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: url('./Image/body.jpg');
+            font-size: 12px;
+            line-height: 22px;
+            min-height: 100%;
+            position: relative;
+        }
 
-<style type="text/css">
-body {
-	font-family: Arial, Helvetica, sans-serif;
-	background: url('./Image/body.jpg');
-	font-size: 12px;
-	line-height: 22px;
-	min-height: 100%;
-	position: relative;
-}
-
-.container-fluid {
-	display: flex;
-	padding-left: 0px;
-	padding-right: 0px;
-}
-</style>
-
+        .container-fluid {
+            display: flex;
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+    </style>
 </head>
 <body>
-	<div th:replace="~{navbar.html}"></div>
-	<div class="container-fluid">
-		<div th:replace="~{navbar3.html}"></div>
-		<div style="width:100%;">
-			<div class="container-fluid" th:replace="~{staffNavbar.html}"></div>
-			<h1> Admin PAGE</h1>
-		</div>
-
-	</div>
-
-	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-	<script
-		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <div th:replace="navbar.html"></div>
+    <div class="container-fluid">
+        <div th:replace="navbar3.html"></div>
+        <div style="width: 100%;">
+            <div class="container-fluid" th:replace="staffNavbar.html"></div>
+            <div class="container mt-5" style="box-shadow: 1px 1px 1px 1px #999;">
+                <h1>Duyuru Ekle</h1>
+                <form th:action="@{/admin/announcements}" th:object="${announcement}" method="post">
+                    <div class="form-group">
+                        <label for="title">Başlık</label>
+                        <input type="text" id="title" name="title" class="form-control" th:field="*{title}" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="content">İçerik</label>
+                        <textarea id="content" name="content" class="form-control" th:field="*{content}" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                </form>
+                <h2>Mevcut Duyurular</h2>
+                <div>
+                    <ul th:each="announcement : ${announcements}">
+                        <li>
+                            <strong th:text="${announcement.title}"></strong>
+                            <p th:text="${announcement.content}"></p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

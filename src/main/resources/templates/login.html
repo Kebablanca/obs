@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBS</title>
+<link
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+	rel="stylesheet">
+<style>
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	background: url('./images/body.jpg') no-repeat center center fixed;
+	background-size: cover;
+	font-size: 12px;
+	line-height: 22px;
+	min-height: 100%;
+	position: relative;
+}
+
+.container-fluid {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.login-container {
+	background-color: white;
+	padding: 2em;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0.5, 0.5, 0.5, 0.5);
+	width: 300px;
+	text-align: center;
+}
+
+.login-container h1 {
+	margin-bottom: 1.5em;
+	font-size: 1.5em;
+	color: #333;
+}
+
+.login-container label {
+	display: block;
+	margin-bottom: 0.5em;
+	color: #666;
+	font-size: 0.9em;
+}
+
+.login-container input {
+	width: 100%;
+	padding: 0.5em;
+	margin-bottom: 1em;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	font-size: 1em;
+}
+
+.login-container button {
+	width: 100%;
+	padding: 0.5em;
+	background-color: green;
+	border: none;
+	border-radius: 5px;
+	color: white;
+	font-size: 1em;
+	cursor: pointer;
+}
+
+.login-container button:hover {
+	background-color: #0056b3;
+}
+
+.error-message {
+	color: red;
+	font-size: 0.9em;
+	margin-bottom: 1em;
+}
+</style>
+</head>
+<body>
+	<div>
+		<nav class="navbar navbar-expand-lg navbar-light"
+			style="background: url('./images/sidebar.jpg') repeat 0 0; background-color: #636363">
+			<div class="container-fluid">
+				<a class="navbar-brand d-flex align-items-center" href="#"> <img
+					src="./images/logo.png" width="65" height="60"
+					class="d-inline-block align-top" alt="">
+					<div class="ml-2">
+						<h5 style="color: white; margin: 0;">Ankara Üniversitesi</h5>
+						<h4 style="color: #D3D3D3; font-weight: bold; margin: 0;">Bilgi
+							Yönetim Sistemi</h4>
+					</div>
+				</a>
+
+				<button class="navbar-toggler" type="button" data-toggle="collapse"
+					data-target="#navbarNav" aria-controls="navbarNav"
+					aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+			</div>
+		</nav>
+	</div>
+	<div class="container-fluid mt-5">
+		<div class="login-container">
+			<h1>Giriş Yapın</h1>
+			<form th:action="@{/login}" method="post">
+				<div>
+					<label for="mail">Email:</label> <input type="text" id="mail"
+						name="mail" required />
+				</div>
+				<div>
+					<label for="password">Password:</label> <input type="password"
+						id="password" name="password" required />
+				</div>
+				<div>
+					<button type="submit">Login</button>
+				</div>
+				<div th:if="${param.error}">
+					<p class="error-message">Invalid mail or password</p>
+				</div>
+			</form>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

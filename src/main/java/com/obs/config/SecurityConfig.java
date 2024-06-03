@@ -49,6 +49,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/login", "/images/**", "/css/**").permitAll()
                 .requestMatchers("/search").hasRole("STAFF")
+                .requestMatchers("/tsearch").hasRole("TEACHER")
                 .requestMatchers("/users/").hasRole("STAFF")
                 .requestMatchers("/users/add").hasRole("STAFF")
                 .requestMatchers("/courses/add").hasRole("STAFF")

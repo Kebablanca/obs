@@ -45,11 +45,15 @@ public class StudentCourseSelectionController {
 
     @GetMapping("/select")
     public String showCourseSelectionForm(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
-        UserEntity student = userService.findByMail(userEmail);
+        UserEntity user = userService.findByMail(userEmail);
+        if (user != null) {
+            model.addAttribute("userName", user.getFirstName());
+            model.addAttribute("lastName", user.getLastName());
+        }
 
-        if (student != null) {
+        if (user != null) {
             GlobalSettingsEntity globalSettings = globalSettingsService.getGlobalSettings();
             LocalDate currentDate = LocalDate.now();
             boolean isWithinDateRange = currentDate.isAfter(LocalDate.parse(globalSettings.getStartDate())) 
@@ -57,12 +61,12 @@ public class StudentCourseSelectionController {
 
             model.addAttribute("isWithinDateRange", isWithinDateRange);
 
-            List<EnrollmentEntity> enrollments = enrollmentService.findEnrollmentsByUserNumber(student.getNumber());
+            List<EnrollmentEntity> enrollments = enrollmentService.findEnrollmentsByUserNumber(user.getNumber());
             Set<String> enrolledCourseIds = enrollments.stream()
                     .flatMap(enrollment -> enrollment.getCourseIds().stream())
                     .collect(Collectors.toSet());
 
-            List<CourseEntity> availableCourses = courseService.findCoursesByDepartment(student.getDepartment()).stream()
+            List<CourseEntity> availableCourses = courseService.findCoursesByDepartment(user.getDepartment()).stream()
                     .filter(course -> !enrolledCourseIds.contains(course.getId()))
                     .collect(Collectors.toList());
 

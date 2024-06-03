@@ -69,7 +69,7 @@ public class UserController {
         else if (request.isUserInRole("ROLE_TEACHER")) {
             List<Announcement> announcements = announcementService.findAll();
             model.addAttribute("announcements", announcements);
-            return "userPage";
+            return "teacherPage";
         }else {
             return "errorPage"; 
         }
@@ -100,13 +100,33 @@ public class UserController {
         model.addAttribute("user", new UserEntity());
         return "search"; 
     }
-
+    
+    @GetMapping("/tsearch")
+    public String showSearchFormt(Model model) {
+    	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        UserEntity user = userService.findByMail(userEmail);
+        if (user != null) {
+            model.addAttribute("userName", user.getFirstName());
+            model.addAttribute("lastName", user.getLastName());
+        }
+        model.addAttribute("user", new UserEntity());
+        return "tsearch"; 
+    }
     @PostMapping("/search")
     public String searchUser(@RequestParam("number") Long number, Model model) {
 
         UserEntity user = userService.findByNumber(number);
         model.addAttribute("user", user);
         return "search"; 
+    }
+
+    @PostMapping("/tsearch")
+    public String searchUsert(@RequestParam("number") Long number, Model model) {
+
+        UserEntity user = userService.findByNumber(number);
+        model.addAttribute("user", user);
+        return "tsearch"; 
     }
        
 }

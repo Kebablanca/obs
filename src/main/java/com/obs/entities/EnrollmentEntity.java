@@ -11,10 +11,10 @@ import java.util.Map;
 public class EnrollmentEntity {
     @Id
     private String id;
-    private Long userNumber; // Kullanıcı numarası
-    private List<String> courseIds; // Ders ID'leri listesi
-    private Map<String, Integer> midtermGrades = new HashMap<>(); // Ders ID'si ve vize notu
-    private Map<String, Integer> finalGrades = new HashMap<>(); // Ders ID'si ve final notu
+    private Long userNumber;
+    private List<String> courseIds; 
+    private Map<String, Integer> midtermGrades = new HashMap<>(); 
+    private Map<String, Integer> finalGrades = new HashMap<>(); 
 
     // Getters and Setters
     public String getId() {

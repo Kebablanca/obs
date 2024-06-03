@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,44 +45,70 @@ public class TranscriptController {
 
         if (user != null) {
             List<EnrollmentEntity> enrollments = enrollmentService.findEnrollmentsByUserNumber(user.getNumber());
-            List<CourseEntity> courses = enrollments.stream()
-                    .flatMap(enrollment -> enrollment.getCourseIds().stream().map(courseService::findCourseById))
-                    .collect(Collectors.toList());
+            List<CourseWithGrades> courseWithGradesList = new ArrayList<>();
 
             double totalCredits = 0;
             double weightedGradesSum = 0;
 
-            for (CourseEntity course : courses) {
-                int midtermGrade = enrollments.stream()
-                        .map(e -> e.getMidtermGrades().get(course.getId()))
-                        .filter(g -> g != null)
-                        .findFirst()
-                        .orElse(0);
+            for (EnrollmentEntity enrollment : enrollments) {
+                for (String courseId : enrollment.getCourseIds()) {
+                    CourseEntity course = courseService.findCourseById(courseId);
+                    if (course != null) {
+                        Integer midtermGrade = enrollment.getMidtermGrades().get(courseId);
+                        Integer finalGrade = enrollment.getFinalGrades().get(courseId);
+                        if (midtermGrade == null) midtermGrade = 0;
+                        if (finalGrade == null) finalGrade = 0;
 
-                int finalGrade = enrollments.stream()
-                        .map(e -> e.getFinalGrades().get(course.getId()))
-                        .filter(g -> g != null)
-                        .findFirst()
-                        .orElse(0);
+                        int overallGrade = (midtermGrade * course.getMidtermWeight() + finalGrade * course.getFinalWeight()) / 100;
+                        String letterGrade = GradeUtils.getLetterGrade(overallGrade);
+                        double gradePoint = GradeUtils.getGradePoint(letterGrade);
 
-                int overallGrade = (midtermGrade * course.getMidtermWeight() + finalGrade * course.getFinalWeight()) / 100;
-                String letterGrade = GradeUtils.getLetterGrade(overallGrade);
-                double gradePoint = GradeUtils.getGradePoint(letterGrade);
+                        totalCredits += course.getCredits();
+                        weightedGradesSum += gradePoint * course.getCredits();
 
-                totalCredits += course.getCredits();
-                weightedGradesSum += gradePoint * course.getCredits();
-
-                course.setCourseName(course.getCourseName() + " (" + letterGrade + ")");
+                        courseWithGradesList.add(new CourseWithGrades(course, midtermGrade, finalGrade, letterGrade));
+                    }
+                }
             }
 
             double gpa = weightedGradesSum / totalCredits;
 
             model.addAttribute("student", user);
-            model.addAttribute("courses", courses);
+            model.addAttribute("courses", courseWithGradesList);
             model.addAttribute("totalCredits", totalCredits);
             model.addAttribute("gpa", gpa);
         }
 
         return "transcript";
+    }
+
+    private static class CourseWithGrades {
+        private final CourseEntity course;
+        private final int midtermGrade;
+        private final int finalGrade;
+        private final String letterGrade;
+
+        public CourseWithGrades(CourseEntity course, int midtermGrade, int finalGrade, String letterGrade) {
+            this.course = course;
+            this.midtermGrade = midtermGrade;
+            this.finalGrade = finalGrade;
+            this.letterGrade = letterGrade;
+        }
+
+        public CourseEntity getCourse() {
+            return course;
+        }
+
+        public int getMidtermGrade() {
+            return midtermGrade;
+        }
+
+        public int getFinalGrade() {
+            return finalGrade;
+        }
+
+        public String getLetterGrade() {
+            return letterGrade;
+        }
     }
 }
